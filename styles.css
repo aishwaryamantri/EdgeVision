@@ -1,0 +1,889 @@
+:root {
+  --bg-darkest: #07090c;
+  --bg-darker: #0c0f14;
+  --bg-card: #12171f;
+  --bg-card-hover: #18202b;
+  --border-color: #1f2937;
+  --border-focus: #76b900;
+  --nvidia-green: #76b900;
+  --nvidia-green-glow: rgba(118, 185, 0, 0.35);
+  --nvidia-green-light: #98dc1c;
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --cyber-cyan: #00e5ff;
+  --neon-red: #ff3b30;
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --shadow-glow: 0 0 20px rgba(118, 185, 0, 0.25);
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-darkest);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+  background-image: 
+    radial-gradient(circle at 15% 10%, rgba(118, 185, 0, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 85% 90%, rgba(0, 229, 255, 0.05) 0%, transparent 40%),
+    linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+}
+
+/* Header & Navbar */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.85rem 2rem;
+  background-color: rgba(12, 15, 20, 0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-color);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.brand-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.nvidia-logo-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.nvidia-icon {
+  width: 28px;
+  height: 28px;
+  fill: var(--nvidia-green);
+  filter: drop-shadow(0 0 8px var(--nvidia-green-glow));
+}
+
+.brand-text h1 {
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.brand-text h1 span {
+  color: var(--nvidia-green);
+}
+
+.brand-subtitle {
+  font-size: 0.72rem;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  letter-spacing: 0.03em;
+}
+
+.nav-telemetry {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.8rem;
+  background: rgba(118, 185, 0, 0.1);
+  border: 1px solid rgba(118, 185, 0, 0.3);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-family: var(--font-mono);
+  color: var(--nvidia-green-light);
+}
+
+.pulse-dot {
+  width: 8px;
+  height: 8px;
+  background: var(--nvidia-green);
+  border-radius: 50%;
+  box-shadow: 0 0 10px var(--nvidia-green);
+  animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.85); }
+}
+
+.hardware-pill {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.hardware-pill strong {
+  color: #fff;
+}
+
+/* App Main Layout */
+.app-container {
+  display: grid;
+  grid-template-columns: 1fr 390px;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  flex: 1;
+  max-width: 1720px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* Left: Viewport Workspace */
+.viewport-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.viewport-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  background: var(--bg-card);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.viewport-title {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-secondary);
+}
+
+.live-badge {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  background: rgba(118, 185, 0, 0.2);
+  color: var(--nvidia-green);
+  border: 1px solid rgba(118, 185, 0, 0.4);
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+}
+
+.viewport-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.btn-icon {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  width: 34px;
+  height: 34px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-icon:hover {
+  background: var(--nvidia-green);
+  color: #000;
+  border-color: var(--nvidia-green);
+  box-shadow: 0 0 12px var(--nvidia-green-glow);
+}
+
+.btn-action-sm {
+  background: var(--bg-card-hover);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.4rem 0.8rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: all 0.2s;
+}
+
+.btn-action-sm:hover {
+  border-color: var(--nvidia-green);
+  color: var(--nvidia-green-light);
+}
+
+/* Canvas Viewport Stage */
+.canvas-stage {
+  flex: 1;
+  position: relative;
+  min-height: 480px;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  padding: 0.5rem;
+}
+
+.canvas-container {
+  position: relative;
+  max-width: 100%;
+  max-height: 100%;
+  display: inline-block;
+  line-height: 0;
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+#originalCanvas {
+  display: block;
+  max-width: 100%;
+  max-height: 72vh;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+}
+
+#edgeCanvasWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 50%;
+  overflow: hidden;
+  border-right: 2px solid var(--nvidia-green);
+  box-shadow: 2px 0 12px var(--nvidia-green-glow);
+  pointer-events: none;
+}
+
+#edgeCanvas {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  max-width: none !important;
+  max-height: none !important;
+  pointer-events: none;
+}
+
+/* Comparison Split Slider Handle */
+.split-slider-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 4px;
+  background: var(--nvidia-green);
+  box-shadow: 0 0 14px var(--nvidia-green);
+  cursor: ew-resize;
+  transform: translateX(-50%);
+  z-index: 20;
+}
+
+.split-slider-knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 34px;
+  height: 34px;
+  background: #111;
+  border: 2px solid var(--nvidia-green);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--nvidia-green);
+  box-shadow: 0 0 15px var(--nvidia-green-glow);
+}
+
+.split-label {
+  position: absolute;
+  bottom: 16px;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 0.25rem 0.6rem;
+  background: rgba(0, 0, 0, 0.75);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.split-label-left {
+  left: 16px;
+  color: var(--nvidia-green);
+  border-color: rgba(118, 185, 0, 0.4);
+}
+
+.split-label-right {
+  right: 16px;
+  color: var(--text-secondary);
+}
+
+/* Telemetry Overlay HUD */
+.hud-telemetry {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  z-index: 15;
+  pointer-events: none;
+}
+
+.hud-item {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: rgba(8, 11, 15, 0.85);
+  backdrop-filter: blur(8px);
+  padding: 0.3rem 0.6rem;
+  border-left: 2px solid var(--nvidia-green);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  color: var(--text-primary);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.hud-item span {
+  color: var(--text-muted);
+}
+
+.hud-item strong {
+  color: var(--nvidia-green-light);
+}
+
+/* Right Controls Panel */
+.controls-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  overflow-y: auto;
+  max-height: calc(100vh - 120px);
+  padding-right: 4px;
+}
+
+.controls-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.controls-panel::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 3px;
+}
+
+.control-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+.control-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.control-card-title {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.control-card-title svg {
+  color: var(--nvidia-green);
+}
+
+/* Preset buttons grid */
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.preset-btn {
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 0.6rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.preset-btn:hover {
+  background: var(--bg-card-hover);
+  border-color: rgba(118, 185, 0, 0.5);
+}
+
+.preset-btn.active {
+  background: rgba(118, 185, 0, 0.12);
+  border-color: var(--nvidia-green);
+  box-shadow: 0 0 10px rgba(118, 185, 0, 0.2);
+}
+
+.preset-name {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.preset-meta {
+  font-size: 0.68rem;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+}
+
+.source-actions-row {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.btn-upload, .btn-webcam {
+  flex: 1 1 calc(33.333% - 0.5rem);
+  min-width: 95px;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.5rem 0.35rem;
+  font-size: 0.72rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.btn-upload:hover, .btn-webcam:hover {
+  border-color: var(--nvidia-green);
+  color: var(--nvidia-green);
+}
+
+.btn-webcam.active {
+  background: rgba(255, 59, 48, 0.15);
+  border-color: var(--neon-red);
+  color: var(--neon-red);
+}
+
+/* Algorithm Selector */
+.algo-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.algo-tab {
+  flex: 1 1 calc(33.333% - 0.4rem);
+  min-width: 90px;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  padding: 0.5rem 0.4rem;
+  text-align: center;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+.algo-tab:hover {
+  color: #fff;
+  border-color: rgba(118, 185, 0, 0.4);
+}
+
+.algo-tab.active {
+  background: var(--nvidia-green);
+  color: #000;
+  border-color: var(--nvidia-green);
+  font-weight: 700;
+  box-shadow: 0 0 10px var(--nvidia-green-glow);
+}
+
+/* Slider Controls */
+.slider-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.slider-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.slider-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.slider-val {
+  font-family: var(--font-mono);
+  color: var(--nvidia-green-light);
+  font-weight: 600;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  background: var(--bg-darker);
+  border-radius: 3px;
+  outline: none;
+  border: 1px solid var(--border-color);
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--nvidia-green);
+  cursor: pointer;
+  box-shadow: 0 0 8px var(--nvidia-green);
+  transition: transform 0.15s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Palette & Aesthetics */
+.palette-row {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.palette-chip {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: all 0.2s;
+  position: relative;
+}
+
+.palette-chip:hover {
+  transform: translateY(-2px);
+}
+
+.palette-chip.active {
+  border-color: #fff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+}
+
+.palette-chip.green { background: #76b900; }
+.palette-chip.cyan { background: #00e5ff; }
+.palette-chip.white { background: #ffffff; }
+.palette-chip.amber { background: #ffb000; }
+.palette-chip.red { background: #ff3b30; }
+
+.toggle-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.toggle-label {
+  font-size: 0.78rem;
+  color: var(--text-primary);
+}
+
+/* Toggle Switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 38px;
+  height: 20px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider-switch {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  transition: .3s;
+  border-radius: 20px;
+}
+
+.slider-switch:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 2px;
+  bottom: 2px;
+  background-color: var(--text-secondary);
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider-switch {
+  background-color: rgba(118, 185, 0, 0.25);
+  border-color: var(--nvidia-green);
+}
+
+input:checked + .slider-switch:before {
+  transform: translateX(18px);
+  background-color: var(--nvidia-green);
+  box-shadow: 0 0 8px var(--nvidia-green);
+}
+
+/* Hardware Selector & Telemetry */
+.engine-select {
+  width: 100%;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 0.8rem;
+}
+
+.engine-select:focus {
+  border-color: var(--nvidia-green);
+}
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.6rem;
+}
+
+.telemetry-card {
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  padding: 0.6rem;
+  border-radius: var(--radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.telemetry-label {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.telemetry-val {
+  font-size: 0.95rem;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  color: var(--nvidia-green-light);
+}
+
+/* Bottom Research / Code Section */
+.bottom-section {
+  max-width: 1720px;
+  margin: 0 auto 2rem;
+  padding: 0 2rem;
+  width: 100%;
+}
+
+.research-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.tabs-header {
+  display: flex;
+  background: var(--bg-darker);
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 1rem;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  padding: 0.85rem 1.25rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tab-btn:hover {
+  color: #fff;
+}
+
+.tab-btn.active {
+  color: var(--nvidia-green);
+  border-bottom-color: var(--nvidia-green);
+  font-weight: 600;
+}
+
+.tab-content {
+  display: none;
+  padding: 1.5rem;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+.code-container {
+  background: #090c10;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 1.2rem;
+  position: relative;
+  overflow-x: auto;
+}
+
+.code-container pre {
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  color: #e6edf3;
+  line-height: 1.6;
+}
+
+.code-copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.72rem;
+  font-family: var(--font-mono);
+  padding: 0.35rem 0.7rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.code-copy-btn:hover {
+  color: var(--nvidia-green);
+  border-color: var(--nvidia-green);
+}
+
+/* Benchmark Table */
+.benchmark-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+}
+
+.benchmark-table th {
+  text-align: left;
+  padding: 0.75rem 1rem;
+  background: var(--bg-darker);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.benchmark-table td {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border-color);
+  color: #fff;
+}
+
+.benchmark-table tr:hover td {
+  background: rgba(118, 185, 0, 0.04);
+}
+
+.tag-fast {
+  background: rgba(118, 185, 0, 0.2);
+  color: var(--nvidia-green-light);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1080px) {
+  .app-container {
+    grid-template-columns: 1fr;
+  }
+  .controls-panel {
+    max-height: none;
+  }
+}
