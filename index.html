@@ -1,0 +1,419 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NVIDIA Vision AI Lab — Edge Detection Suite</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="brand-container">
+      <div class="nvidia-logo-badge">
+        <svg class="nvidia-icon" viewBox="0 0 24 24">
+          <path d="M7.74 3.75c-3.15.54-5.63 2.85-6.57 5.92-.47 1.54-.53 3.49-.15 5.07.72 3.01 2.89 5.37 5.86 6.38 1.25.43 3.04.57 4.39.35 2.87-.47 5.31-2.34 6.45-5.02.48-1.12.67-2.11.67-3.45 0-1.28-.15-2.07-.61-3.16-1.02-2.42-3.14-4.25-5.74-4.94-1.29-.34-3.05-.39-4.3-.15zm2.74 2.84c2.25.32 4.09 1.93 4.67 4.09.28 1.05.24 2.45-.11 3.51-.55 1.67-1.87 2.92-3.56 3.39-.77.21-1.95.21-2.72 0-1.78-.49-3.14-1.85-3.64-3.64-.24-.86-.24-2.15 0-3.01.55-1.95 2.06-3.46 4.02-4.01.4-.11 1.01-.22 1.34-.33zM9.4 8.79c-1.3.43-2.22 1.57-2.38 2.93-.16 1.34.45 2.58 1.62 3.25.75.43 1.94.51 2.76.19 1.15-.45 1.9-1.58 1.9-2.88 0-.9-.39-1.81-1.07-2.43-.72-.66-1.77-.96-2.83-.06z"/>
+        </svg>
+      </div>
+      <div class="brand-text">
+        <h1>NVIDIA <span>EDGE LAB</span></h1>
+        <div class="brand-subtitle">TENSORRT & JETSON COMPUTER VISION SUITE</div>
+      </div>
+    </div>
+
+    <div class="nav-telemetry">
+      <div class="status-indicator">
+        <div class="pulse-dot"></div>
+        <span>ACCELERATOR ACTIVE</span>
+      </div>
+      <div class="hardware-pill">
+        <span>ENGINE:</span>
+        <strong id="navHwName">NVIDIA RTX 5090</strong>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Workspace -->
+  <main class="app-container">
+    
+    <!-- Left: Viewport Stage -->
+    <section class="viewport-panel">
+      <div class="viewport-header">
+        <div class="viewport-title">
+          <span>REAL-TIME INFERENCE VIEWPORT</span>
+          <span class="live-badge">INTERACTIVE DUAL BUFFER</span>
+        </div>
+        <div class="viewport-actions">
+          <button class="btn-action-sm" id="exportBtn" title="Export Processed Edge Map">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="7 10 12 15 17 10"/>
+              <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            EXPORT PNG
+          </button>
+        </div>
+      </div>
+
+      <div class="canvas-stage" id="stageContainer">
+        <!-- Telemetry Floating HUD -->
+        <div class="hud-telemetry">
+          <div class="hud-item">
+            <span>RES:</span> <strong id="hudRes">840 x 540</strong>
+          </div>
+          <div class="hud-item">
+            <span>FPS:</span> <strong id="hudFps">60 FPS</strong>
+          </div>
+          <div class="hud-item">
+            <span>LATENCY:</span> <strong id="hudLatency">0.82 ms</strong>
+          </div>
+          <div class="hud-item">
+            <span>OPERATOR:</span> <strong id="hudAlgo">CANNY</strong>
+          </div>
+          <div class="hud-item">
+            <span>EDGE DENSITY:</span> <strong id="hudDensity">8.4%</strong>
+          </div>
+        </div>
+
+        <!-- Canvas Container with Interactive Comparison Slider -->
+        <div class="canvas-container" id="canvasContainer">
+          <!-- Background: Original Raw Sensor Stream -->
+          <canvas id="originalCanvas"></canvas>
+
+          <!-- Foreground Clipped: Edge Processed Tensor Buffer -->
+          <div id="edgeCanvasWrapper">
+            <canvas id="edgeCanvas"></canvas>
+          </div>
+
+          <!-- Draggable Split Bar -->
+          <div class="split-slider-handle" id="splitSliderHandle">
+            <div class="split-slider-knob">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="8 4 4 12 8 20"/>
+                <polyline points="16 4 20 12 16 20"/>
+              </svg>
+            </div>
+          </div>
+
+          <div class="split-label split-label-left">PROCESSED TENSOR</div>
+          <div class="split-label split-label-right">RAW INPUT STREAM</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right: Vision Controls Panel -->
+    <aside class="controls-panel">
+      
+      <!-- Source Selection Card -->
+      <div class="control-card">
+        <div class="control-card-header">
+          <h2 class="control-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/>
+              <line x1="7" y1="2" x2="7" y2="22"/>
+              <line x1="17" y1="2" x2="17" y2="22"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <line x1="2" y1="7" x2="7" y2="7"/>
+              <line x1="2" y1="17" x2="7" y2="17"/>
+              <line x1="17" y1="17" x2="22" y2="17"/>
+              <line x1="17" y1="7" x2="22" y2="7"/>
+            </svg>
+            INPUT DATASET & SENSORS
+          </h2>
+        </div>
+
+        <div class="presets-grid">
+          <button class="preset-btn active" data-preset="dashcam">
+            <span class="preset-name">Autonomous Drive</span>
+            <span class="preset-meta">Drive AGX Dashcam</span>
+          </button>
+          <button class="preset-btn" data-preset="robotics">
+            <span class="preset-name">Jetson Robotics</span>
+            <span class="preset-meta">Orin Arm Inspection</span>
+          </button>
+          <button class="preset-btn" data-preset="wafer">
+            <span class="preset-name">Silicon Wafer</span>
+            <span class="preset-meta">Sub-micron Defects</span>
+          </button>
+          <button class="preset-btn" data-preset="medical">
+            <span class="preset-name">Clara Medical</span>
+            <span class="preset-meta">MRI Neuro Scan</span>
+          </button>
+        </div>
+
+        <div class="source-actions-row">
+          <button class="btn-upload" id="uploadBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+              <polyline points="17 8 12 3 7 8"/>
+              <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            UPLOAD IMAGE
+          </button>
+          <input type="file" id="fileInput" accept="image/*" style="display: none;">
+
+          <button class="btn-webcam" id="webcamBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M23 7l-7 5 7 5V7z"/>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
+            LIVE WEBCAM
+          </button>
+
+          <button class="btn-webcam" id="liveSimBtn" style="border-color: rgba(0, 229, 255, 0.4); color: #00e5ff;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            LIVE SIM (60FPS)
+          </button>
+        </div>
+      </div>
+
+      <!-- Algorithm Selection Card -->
+      <div class="control-card">
+        <div class="control-card-header">
+          <h2 class="control-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"/>
+              <polyline points="2 17 12 22 22 17"/>
+              <polyline points="2 12 12 17 22 12"/>
+            </svg>
+            EDGE OPERATORS
+          </h2>
+        </div>
+
+        <div class="algo-tabs">
+          <div class="algo-tab active" data-algo="canny">CANNY</div>
+          <div class="algo-tab" data-algo="sobel">SOBEL</div>
+          <div class="algo-tab" data-algo="scharr">SCHARR</div>
+          <div class="algo-tab" data-algo="prewitt">PREWITT</div>
+          <div class="algo-tab" data-algo="laplacian">LAPLACIAN</div>
+        </div>
+
+        <!-- Canny Specific Controls -->
+        <div class="slider-group" id="cannyControls">
+          <div class="slider-item">
+            <div class="slider-label-row">
+              <span>Hysteresis Low Threshold</span>
+              <span class="slider-val" id="cannyLowVal">25</span>
+            </div>
+            <input type="range" id="cannyLowSlider" min="5" max="100" value="25">
+          </div>
+
+          <div class="slider-item">
+            <div class="slider-label-row">
+              <span>Hysteresis High Threshold</span>
+              <span class="slider-val" id="cannyHighVal">75</span>
+            </div>
+            <input type="range" id="cannyHighSlider" min="20" max="200" value="75">
+          </div>
+        </div>
+
+        <!-- Standard Gradient Controls -->
+        <div class="slider-group" id="standardControls" style="display: none;">
+          <div class="slider-item">
+            <div class="slider-label-row">
+              <span>Gradient Sensitivity Threshold</span>
+              <span class="slider-val" id="threshVal">45</span>
+            </div>
+            <input type="range" id="threshSlider" min="5" max="180" value="45">
+          </div>
+        </div>
+      </div>
+
+      <!-- Edge Styling & Filters Card -->
+      <div class="control-card">
+        <div class="control-card-header">
+          <h2 class="control-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 2a14.5 14.5 0 0 0 0 20 10 10 0 0 0 0-20"/>
+            </svg>
+            SHADER & PALETTE
+          </h2>
+        </div>
+
+        <div class="palette-row">
+          <div class="palette-chip green active" data-color="nvidia-green" title="NVIDIA Emerald (#76B900)"></div>
+          <div class="palette-chip cyan" data-color="cyber-cyan" title="Cyber Cyan (#00E5FF)"></div>
+          <div class="palette-chip white" data-color="mono" title="Monochrome White (#FFFFFF)"></div>
+          <div class="palette-chip amber" data-color="amber" title="Telemetry Amber (#FFB000)"></div>
+          <div class="palette-chip red" data-color="neon-red" title="Infrared Neon (#FF3B30)"></div>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <div class="toggle-row">
+            <span class="toggle-label">Gaussian Blur Denoising (5x5)</span>
+            <label class="switch">
+              <input type="checkbox" id="blurToggle" checked>
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">Neon Overlay on Original</span>
+            <label class="switch">
+              <input type="checkbox" id="overlayToggle">
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+
+          <div class="toggle-row">
+            <span class="toggle-label">Invert Colors (Blueprint Mode)</span>
+            <label class="switch">
+              <input type="checkbox" id="invertToggle">
+              <span class="slider-switch"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hardware Accelerator Simulation -->
+      <div class="control-card">
+        <div class="control-card-header">
+          <h2 class="control-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="4" y="4" width="16" height="16" rx="2"/>
+              <rect x="9" y="9" width="6" height="6"/>
+              <line x1="9" y1="1" x2="9" y2="4"/>
+              <line x1="15" y1="1" x2="15" y2="4"/>
+              <line x1="9" y1="20" x2="9" y2="23"/>
+              <line x1="15" y1="20" x2="15" y2="23"/>
+              <line x1="20" y1="9" x2="23" y2="9"/>
+              <line x1="20" y1="14" x2="23" y2="14"/>
+              <line x1="1" y1="9" x2="4" y2="9"/>
+              <line x1="1" y1="14" x2="4" y2="14"/>
+            </svg>
+            ACCELERATOR TELEMETRY
+          </h2>
+        </div>
+
+        <select class="engine-select" id="engineSelect">
+          <option value="rtx5090">NVIDIA RTX 5090 (Blackwell FP16 TensorRT)</option>
+          <option value="jetson">NVIDIA Jetson AGX Orin 64GB (DLA Engine)</option>
+          <option value="clara">NVIDIA Clara Holoscan (Medical Stream)</option>
+          <option value="cpu">x86_64 AVX-512 CPU Reference</option>
+        </select>
+
+        <div class="telemetry-grid">
+          <div class="telemetry-card">
+            <span class="telemetry-label">INFERENCE LATENCY</span>
+            <span class="telemetry-val" id="hwLatency">0.82 ms</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="telemetry-label">VRAM OCCUPANCY</span>
+            <span class="telemetry-val" id="hwVram">1.4 / 32 GB</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="telemetry-label">TENSOR UTILIZATION</span>
+            <span class="telemetry-val" id="hwTensor">24%</span>
+          </div>
+          <div class="telemetry-card">
+            <span class="telemetry-label">POWER DRAW</span>
+            <span class="telemetry-val" id="hwPower">145W</span>
+          </div>
+        </div>
+      </div>
+
+    </aside>
+  </main>
+
+  <!-- Bottom Research & Deployment Drawer -->
+  <section class="bottom-section">
+    <div class="research-card">
+      <div class="tabs-header">
+        <button class="tab-btn active" data-tab="cuda">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/>
+            <polyline points="8 6 2 12 8 18"/>
+          </svg>
+          CUDA C++ KERNEL
+        </button>
+        <button class="tab-btn" data-tab="tensorrt">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+          </svg>
+          PYTORCH / TENSORRT
+        </button>
+        <button class="tab-btn" data-tab="opencv">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          JETSON ORIN GSTREAMER
+        </button>
+        <button class="tab-btn" data-tab="benchmarks">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="20" x2="18" y2="10"/>
+            <line x1="12" y1="20" x2="12" y2="4"/>
+            <line x1="6" y1="20" x2="6" y2="14"/>
+          </svg>
+          HARDWARE BENCHMARKS
+        </button>
+      </div>
+
+      <!-- Code Inspector Tab -->
+      <div class="tab-content active" id="codeTabContent">
+        <div class="code-container">
+          <button class="code-copy-btn" id="copyCodeBtn">COPY CODE</button>
+          <pre><code id="codeDisplay"></code></pre>
+        </div>
+      </div>
+
+      <!-- Benchmarks Tab -->
+      <div class="tab-content" id="benchTabContent" style="display: none;">
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>PLATFORM & ACCELERATOR</th>
+              <th>INPUT RESOLUTION</th>
+              <th>FRAME RATE</th>
+              <th>INFERENCE TIME</th>
+              <th>THROUGHPUT</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>NVIDIA RTX 5090 (Blackwell FP16 TensorRT)</td>
+              <td>4K (3840 x 2160)</td>
+              <td><span class="tag-fast">640 FPS</span></td>
+              <td>0.72 ms</td>
+              <td>12.8 GPixels/sec</td>
+            </tr>
+            <tr>
+              <td>NVIDIA Jetson AGX Orin 64GB (DLA Engine)</td>
+              <td>1080p (1920 x 1080)</td>
+              <td><span class="tag-fast">310 FPS</span></td>
+              <td>2.10 ms</td>
+              <td>1.9 GPixels/sec</td>
+            </tr>
+            <tr>
+              <td>NVIDIA Clara Holoscan Medical Pipeline</td>
+              <td>1440p (2560 x 1440)</td>
+              <td><span class="tag-fast">420 FPS</span></td>
+              <td>1.12 ms</td>
+              <td>4.6 GPixels/sec</td>
+            </tr>
+            <tr>
+              <td>x86_64 CPU (AVX-512 SIMD Baseline)</td>
+              <td>1080p (1920 x 1080)</td>
+              <td>42 FPS</td>
+              <td>14.80 ms</td>
+              <td>0.2 GPixels/sec</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Application Logic -->
+  <script src="script.js"></script>
+</body>
+</html>
